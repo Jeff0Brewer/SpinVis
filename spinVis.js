@@ -86,4 +86,6 @@ function level(fstart, size, numpetals, rotation, color) {
 function resize(){
 	cx = window.innerWidth / 2;
 	cy = window.innerHeight / 2;
+	c.width = window.innerWidth;
+	c.height = window.innerHeight;
 }
