@@ -70,11 +70,11 @@ function level(fstart, size, numpetals, rotation, color) {
 			if(i % 3 < 2){
 				var length = size*Math.pow((aveLevel*.7 + fdata[petal]*.3),2);
 				ctx.lineTo(Math.cos(currAngle)*length, Math.sin(currAngle)*length);
-				if(i % 3 == 1)
-					petal++;
 			}
-			else
+			else{
 				ctx.lineTo(0,0);
+				petal++;
+			}
 			currAngle += this.angleInc;
 		}
 		ctx.closePath();
