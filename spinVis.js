@@ -51,7 +51,6 @@ function level(fstart, size, numpetals, rotation, color) {
 	this.detail = numpetals*3;
 	this.angleInc = 2*Math.PI / this.detail;
 	this.startangle = Math.random(0, 2*Math.PI);
-	this.lastLevel = 0;
 
 	this.next = function(fdata){
 		var aveLevel = 0;
@@ -60,7 +59,7 @@ function level(fstart, size, numpetals, rotation, color) {
 		}
 		aveLevel /= numpetals;
 		
-		this.startangle = this.startangle*.9 + rotation*(aveLevel - this.lastLevel)*.001;
+		this.startangle = this.startangle*.9 + rotation*aveLevel*.001;
 
 		var currAngle = this.startangle;
 		var petal = this.fstart;
