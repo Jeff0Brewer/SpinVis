@@ -6,9 +6,8 @@ var ctx = c.getContext("2d");
 var cx = window.innerWidth / 2;
 var cy = window.innerHeight / 2;
 
-var songs = ['songe.mp3'];
-			 
 var currsong = 0;
+var songs = ['songe.mp3'];
 
 var actx = new AudioContext();
 var audio = new Audio(songs[currsong]);
@@ -30,6 +29,16 @@ for(var i = 0; i < levels.length; i++){
 	rotation *= -1;
 }
 
+var inc = 2*Math.PI / (numpetals*3);
+var sin = [];
+var cos = [];
+var angle = 0;
+for(var i = 0; i < numpetals*3; i++){
+	sin.push(Math.sin(angle));
+	cos.push(Math.cos(angle));
+	angle += inc;
+}
+
 ctx.translate(cx,cy);
 
 requestAnimationFrame(function() { animateframe(); });
@@ -46,9 +55,10 @@ function animateframe(){
 	analyser.getByteFrequencyData(fData);
 
 	ctx.clearRect(-cx,-cy,c.width,c.height);
-
 	var l = levels.length;
-	for(var i = 0; i < l; i++){ levels[i].next(fData); }
+	for(var i = 0; i < l; i++){ 
+		levels[i].next(fData); 
+	}
 
 	requestAnimationFrame(function() { animateframe(); });
 }
@@ -67,32 +77,39 @@ function level(fstart, size, numpetals, rotation, color) {
 
 	this.next = function(fdata){
 		var aveLevel = 0;
-		for(var i = 0; i < this.numpetals; i++){
-			aveLevel += fdata[2*i + fstart];
+		var l = this.numpetals*2;
+		for(var i = 0; i < l; i += 2){
+			aveLevel += fdata[i + fstart];
 		}
 		aveLevel /= this.numpetals;
 		
 		this.startangle = this.startangle*.9 + this.rotation*aveLevel*.001;
 
-		var currAngle = this.startangle;
 		var petal = this.fstart;
+		var aveLevelScaled = aveLevel*.7;
+		var sq = aveLevelScaled + fData[petal]*.3;
+		var length = size*sq*sq;
+
 		ctx.fillStyle = this.color;
+		ctx.rotate(this.startangle);
 		ctx.beginPath();
 		ctx.moveTo(0,0);
+
 		for (var i = 0; i < this.detail; i++){
 			if(i % 3 < 2){
-				var sq = aveLevel*.7 + fdata[petal]*.3;
-				var length = size*sq*sq;
-				ctx.lineTo(Math.cos(currAngle)*length, Math.sin(currAngle)*length);
+				ctx.lineTo(cos[i]*length, sin[i]*length);
 			}
 			else{
 				ctx.lineTo(0,0);
 				petal++;
+				var sq = aveLevelScaled + fData[petal]*.3;
+				length = size*sq*sq;
 			}
-			currAngle += this.angleInc;
 		}
+
 		ctx.closePath();
 		ctx.fill();
+		ctx.rotate(-1*this.startangle);
 	}
 }
 
