@@ -1,5 +1,13 @@
 html, body{
 	overflow: hidden;
+	width: 100%;
+	height: 100%;
+	background: white;
+	background: -webkit-radial-gradient(circle,white 50%, rgb(150,150,150));
+  	background: -o-radial-gradient(circle,white 50%, rgb(150,150,150));
+  	background: -moz-radial-gradient(circle,white 50%, rgb(150,150,150));
+	background: radial-gradient(circle,white 50%, rgb(150,150,150));
+	background-size: cover;
 }	
 
 .c{
