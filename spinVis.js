@@ -6,8 +6,12 @@ var ctx = c.getContext("2d");
 var cx = window.innerWidth / 2;
 var cy = window.innerHeight / 2;
 
+var songs = ['songe.mp3'];
+			 
+var currsong = 0;
+
 var actx = new AudioContext();
-var audio = new Audio('songe.mp3');
+var audio = new Audio(songs[currsong]);
 var audioSrc = actx.createMediaElementSource(audio);
 var analyser = actx.createAnalyser();
 audioSrc.connect(analyser);
@@ -26,20 +30,29 @@ for(var i = 0; i < levels.length; i++){
 	rotation *= -1;
 }
 
-var refreshRate = 1;
-setInterval(function()
-{
+ctx.translate(cx,cy);
+
+requestAnimationFrame(function() { animateframe(); });
+
+function animateframe(){
+	if(audio.currentTime >= audio.duration){
+		currsong++;
+		audio = new Audio(songs[currsong]);
+		audioSrc = actx.createMediaElementSource(audio);
+		audioSrc.connect(analyser);
+		audioSrc.connect(actx.destination);
+		audio.play();
+	}
 	analyser.getByteFrequencyData(fData);
 
-	ctx.clearRect(0,0,c.width,c.height);
-	
-	ctx.translate(cx, cy);
-	for(var i = 0; i < levels.length; i++){
-		levels[i].next(fData);
-	}
-	ctx.translate(-cx, -cy);
-}, 
-refreshRate);
+	ctx.clearRect(-cx,-cy,c.width,c.height);
+
+	var l = levels.length;
+	for(var i = 0; i < l; i++){ levels[i].next(fData); }
+
+	requestAnimationFrame(function() { animateframe(); });
+}
+
 
 function level(fstart, size, numpetals, rotation, color) {
 	this.fstart = fstart;
@@ -54,12 +67,12 @@ function level(fstart, size, numpetals, rotation, color) {
 
 	this.next = function(fdata){
 		var aveLevel = 0;
-		for(var i = 0; i < numpetals; i++){
+		for(var i = 0; i < this.numpetals; i++){
 			aveLevel += fdata[2*i + fstart];
 		}
-		aveLevel /= numpetals;
+		aveLevel /= this.numpetals;
 		
-		this.startangle = this.startangle*.9 + rotation*aveLevel*.001;
+		this.startangle = this.startangle*.9 + this.rotation*aveLevel*.001;
 
 		var currAngle = this.startangle;
 		var petal = this.fstart;
@@ -68,7 +81,8 @@ function level(fstart, size, numpetals, rotation, color) {
 		ctx.moveTo(0,0);
 		for (var i = 0; i < this.detail; i++){
 			if(i % 3 < 2){
-				var length = size*Math.pow((aveLevel*.7 + fdata[petal]*.3),2);
+				var sq = aveLevel*.7 + fdata[petal]*.3;
+				var length = size*sq*sq;
 				ctx.lineTo(Math.cos(currAngle)*length, Math.sin(currAngle)*length);
 			}
 			else{
@@ -83,8 +97,13 @@ function level(fstart, size, numpetals, rotation, color) {
 }
 
 function resize(){
+	ctx.translate(-cx,-cy);
+
 	cx = window.innerWidth / 2;
 	cy = window.innerHeight / 2;
+
 	c.width = window.innerWidth;
 	c.height = window.innerHeight;
+
+	ctx.translate(cx,cy);
 }
