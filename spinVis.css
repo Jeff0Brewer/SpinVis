@@ -3,10 +3,10 @@ html, body{
 	width: 100%;
 	height: 100%;
 	background: white;
-	background: -webkit-radial-gradient(circle,white 50%, rgb(150,150,150));
-  	background: -o-radial-gradient(circle,white 50%, rgb(150,150,150));
-  	background: -moz-radial-gradient(circle,white 50%, rgb(150,150,150));
-	background: radial-gradient(circle,white 50%, rgb(150,150,150));
+	background: -webkit-radial-gradient(circle,white 50%, rgb(240,240,240) 75%, rgb(175,175,175));
+  	background: -o-radial-gradient(circle,white 50%, rgb(240,240,240) 75%, rgb(175,175,175));
+  	background: -moz-radial-gradient(circle,white 50%, rgb(240,240,240) 75%, rgb(175,175,175));
+	background: radial-gradient(circle,white 50%, rgb(240,240,240) 75%, rgb(175,175,175));
 	background-size: cover;
 }	
 
