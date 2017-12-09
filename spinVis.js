@@ -7,7 +7,7 @@ var cx = window.innerWidth / 2;
 var cy = window.innerHeight / 2;
 
 var currsong = 0;
-var songs = ['songe.mp3'];
+var songs = ['songe.mp3';
 
 var actx = new AudioContext();
 var audio = new Audio(songs[currsong]);
@@ -18,14 +18,28 @@ audioSrc.connect(actx.destination);
 var fData = new Uint8Array(analyser.frequencyBinCount);
 audio.play();
 
+var clockmax = 400;
+var clockmin = 350;
+var bodywidth = 11;
+var timerwidth = 9;
+var clockbodycolor = "rgb(0,0,0)";
+var clocktimercolor = "rgb(170,170,170)";
+var clocksmoothness = .992;
+var clock = new Clock(clockmax, clockmin, bodywidth, clockbodycolor, timerwidth, clocktimercolor, clocksmoothness);
+
+var stR = 0, stG = 0, stB = 0;
+var endR = 255, endG = 255, endB = 255;
+var numtop = 3;
 var size = .01;
 var numpetals = 17;
 var rotation = 1;
 var levels = new Array(Math.floor((.3*fData.length)/numpetals));
 for(var i = 0; i < levels.length; i++){
-	var colorval = i*19;
-	var color = "rgb(" + colorval.toString() + "," + colorval.toString() + "," + colorval.toString() + ")";
-	levels[i] = new level(2*i*numpetals,size,numpetals,rotation,color);
+	var R = Math.ceil((endR - stR)*(i/(levels.length - 1 - numtop)) + stR);
+	var G = Math.ceil((endG - stG)*(i/(levels.length - 1 - numtop)) + stG);
+	var B = Math.ceil((endB - stB)*(i/(levels.length - 1 - numtop)) + stB);
+	var color = "rgb(" + R.toString() + "," + G.toString() + "," + B.toString() + ")";
+	levels[i] = new Level(2*i*numpetals,size,numpetals,rotation,color);
 	rotation *= -1;
 }
 
@@ -55,16 +69,64 @@ function animateframe(){
 	analyser.getByteFrequencyData(fData);
 
 	ctx.clearRect(-cx,-cy,c.width,c.height);
-	var l = levels.length;
-	for(var i = 0; i < l; i++){ 
-		levels[i].next(fData); 
-	}
+	drawclock(clock, audio, fData, 10);
+	drawstar(levels, fData);
 
 	requestAnimationFrame(function() { animateframe(); });
 }
 
+function drawclock(clock, song, data, freq){
+	clock.next(song, data, freq);
+}
 
-function level(fstart, size, numpetals, rotation, color) {
+function drawstar(star, data){
+	var l = star.length;
+	for(var i = 0; i < l; i++){ 
+		star[i].next(data); 
+	}
+}
+
+function Clock(maxrad, minrad, bodywidth, bodycolor, timerwidth, timercolor, smoothness){
+	this.maxradius = maxrad;
+	this.minradius = minrad;
+	this.radius = maxrad;
+	this.bodywidth = bodywidth/2;
+	this.bodycolor = bodycolor;
+	this.timerwidth = timerwidth;
+	this.timercolor = timercolor;
+	this.smoothness = smoothness;
+
+	this.startangle = 3*Math.PI/2;
+	this.endangle = 0;
+	this.ccw = false;
+
+	this.next = function(song, data, freq){
+		var avelevel = 0;
+		for(var i = 0; i < freq; i++)
+			avelevel += data[i];
+		avelevel /= freq;
+
+		this.radius = this.radius*this.smoothness + ((this.maxradius-this.minradius)*(1 - avelevel/255) + this.minradius)*(1 - this.smoothness);
+		if(song.duration > 0)
+			this.endangle = this.endangle*.95 + 2*Math.PI*song.currentTime/song.duration*.05;
+
+		ctx.lineWidth = this.timerwidth;
+		ctx.strokeStyle = this.timercolor;
+		ctx.beginPath();
+		ctx.arc(0, 0, this.radius, this.startangle, this.endangle + this.startangle, this.ccw);
+		ctx.stroke();
+
+		ctx.lineWidth = 1;
+		ctx.strokeStyle = this.bodycolor;
+		ctx.beginPath();
+		ctx.moveTo(0,-this.radius - this.bodywidth);
+		ctx.lineTo(0,-this.radius + this.bodywidth);
+		ctx.stroke();
+	}
+}
+
+
+function Level(fstart, size, numpetals, rotation, color) {
 	this.fstart = fstart;
 	this.size = size;
 	this.numpetals = numpetals;
