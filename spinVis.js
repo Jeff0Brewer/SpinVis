@@ -7,7 +7,7 @@ var cx = window.innerWidth / 2;
 var cy = window.innerHeight / 2;
 
 var currsong = 0;
-var songs = ['songe.mp3';
+var songs = ['songe.mp3'];
 
 var actx = new AudioContext();
 var audio = new Audio(songs[currsong]);
@@ -118,6 +118,11 @@ function Clock(maxrad, minrad, bodywidth, bodycolor, timerwidth, timercolor, smo
 
 		ctx.lineWidth = 1;
 		ctx.strokeStyle = this.bodycolor;
+
+		ctx.beginPath();
+		ctx.arc(0, 0, this.radius - this.timerwidth/2 + .5, this.startangle, this.endangle + this.startangle, this.ccw);
+		ctx.stroke();
+
 		ctx.beginPath();
 		ctx.moveTo(0,-this.radius - this.bodywidth);
 		ctx.lineTo(0,-this.radius + this.bodywidth);
