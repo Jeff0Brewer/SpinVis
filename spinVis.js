@@ -3,11 +3,16 @@ c.width = window.innerWidth;
 c.height = window.innerHeight;
 var ctx = c.getContext("2d");
 
+var songname = document.getElementById("songname");
+var songtime = document.getElementById("songtime");
+
 var cx = window.innerWidth / 2;
 var cy = window.innerHeight / 2;
 
 var currsong = 0;
-var songs = ['songe.mp3'];
+var songs = ['Slow Magic - Waited 4 U (ODESZA Remix).mp3'];
+
+songname.innerHTML = songs[currsong].substring(0,songs[currsong].lastIndexOf('.'));
 
 var actx = new AudioContext();
 var audio = new Audio(songs[currsong]);
@@ -24,7 +29,7 @@ var bodywidth = 11;
 var timerwidth = 9;
 var clockbodycolor = "rgb(0,0,0)";
 var clocktimercolor = "rgb(170,170,170)";
-var clocksmoothness = .992;
+var clocksmoothness = .99;
 var clock = new Clock(clockmax, clockmin, bodywidth, clockbodycolor, timerwidth, clocktimercolor, clocksmoothness);
 
 var stR = 0, stG = 0, stB = 0;
@@ -60,12 +65,19 @@ requestAnimationFrame(function() { animateframe(); });
 function animateframe(){
 	if(audio.currentTime >= audio.duration){
 		currsong++;
+
+		songname.innerHTML = songs[currsong].substring(0,songs[currsong].lastIndexOf('.'));
+
 		audio = new Audio(songs[currsong]);
 		audioSrc = actx.createMediaElementSource(audio);
 		audioSrc.connect(analyser);
 		audioSrc.connect(actx.destination);
 		audio.play();
 	}
+
+	songtime.innerHTML = Math.floor(audio.currentTime / 60).toString() + ":" + 
+				  ("0" + Math.floor(audio.currentTime % 60).toString()).slice(-2);
+
 	analyser.getByteFrequencyData(fData);
 
 	ctx.clearRect(-cx,-cy,c.width,c.height);
