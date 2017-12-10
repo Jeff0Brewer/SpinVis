@@ -9,7 +9,7 @@ var songtime = document.getElementById("songtime");
 var cx = window.innerWidth / 2;
 var cy = window.innerHeight / 2;
 
-var currsong = 0;
+var currsong = 12;
 var songs = ['Slow Magic - Waited 4 U (ODESZA Remix).mp3'];
 
 songname.innerHTML = songs[currsong].substring(0,songs[currsong].lastIndexOf('.'));
@@ -30,7 +30,8 @@ var timerwidth = 9;
 var clockbodycolor = "rgb(0,0,0)";
 var clocktimercolor = "rgb(170,170,170)";
 var clocksmoothness = .99;
-var clock = new Clock(clockmax, clockmin, bodywidth, clockbodycolor, timerwidth, clocktimercolor, clocksmoothness);
+var clockfreq = 10;
+var clock = new Clock(clockmax, clockmin, bodywidth, clockbodycolor, timerwidth, clocktimercolor, clocksmoothness, clockfreq);
 
 var stR = 0, stG = 0, stB = 0;
 var endR = 255, endG = 255, endB = 255;
@@ -64,15 +65,17 @@ requestAnimationFrame(function() { animateframe(); });
 
 function animateframe(){
 	if(audio.currentTime >= audio.duration){
-		currsong++;
+		if(currsong < songs.length - 1){
+			currsong++;
 
-		songname.innerHTML = songs[currsong].substring(0,songs[currsong].lastIndexOf('.'));
+			songname.innerHTML = songs[currsong].substring(0,songs[currsong].lastIndexOf('.'));
 
-		audio = new Audio(songs[currsong]);
-		audioSrc = actx.createMediaElementSource(audio);
-		audioSrc.connect(analyser);
-		audioSrc.connect(actx.destination);
-		audio.play();
+			audio = new Audio(songs[currsong]);
+			audioSrc = actx.createMediaElementSource(audio);
+			audioSrc.connect(analyser);
+			audioSrc.connect(actx.destination);
+			audio.play();
+		}
 	}
 
 	songtime.innerHTML = Math.floor(audio.currentTime / 60).toString() + ":" + 
@@ -80,15 +83,15 @@ function animateframe(){
 
 	analyser.getByteFrequencyData(fData);
 
-	ctx.clearRect(-cx,-cy,c.width,c.height);
-	drawclock(clock, audio, fData, 10);
+	ctx.clearRect(-cx, -cy, c.width, c.height);
+	drawclock(clock, audio, fData);
 	drawstar(levels, fData);
 
 	requestAnimationFrame(function() { animateframe(); });
 }
 
-function drawclock(clock, song, data, freq){
-	clock.next(song, data, freq);
+function drawclock(clock, song, data){
+	clock.next(song, data);
 }
 
 function drawstar(star, data){
@@ -98,7 +101,7 @@ function drawstar(star, data){
 	}
 }
 
-function Clock(maxrad, minrad, bodywidth, bodycolor, timerwidth, timercolor, smoothness){
+function Clock(maxrad, minrad, bodywidth, bodycolor, timerwidth, timercolor, smoothness, freq){
 	this.maxradius = maxrad;
 	this.minradius = minrad;
 	this.radius = maxrad;
@@ -107,32 +110,35 @@ function Clock(maxrad, minrad, bodywidth, bodycolor, timerwidth, timercolor, smo
 	this.timerwidth = timerwidth;
 	this.timercolor = timercolor;
 	this.smoothness = smoothness;
+	this.freq = freq;
 
+	this.bodystroke = 1;
 	this.startangle = 3*Math.PI/2;
 	this.endangle = 0;
-	this.ccw = false;
 
-	this.next = function(song, data, freq){
+	this.next = function(song, data){
 		var avelevel = 0;
-		for(var i = 0; i < freq; i++)
+		for(var i = 0; i < this.freq; i++)
 			avelevel += data[i];
-		avelevel /= freq;
+		avelevel /= this.freq;
 
 		this.radius = this.radius*this.smoothness + ((this.maxradius-this.minradius)*(1 - avelevel/255) + this.minradius)*(1 - this.smoothness);
 		if(song.duration > 0)
 			this.endangle = this.endangle*.95 + 2*Math.PI*song.currentTime/song.duration*.05;
+		else if(this.endangle > 0)
+			this.endangle = this.endangle*.95 + 2*Math.PI*.05;
 
 		ctx.lineWidth = this.timerwidth;
 		ctx.strokeStyle = this.timercolor;
 		ctx.beginPath();
-		ctx.arc(0, 0, this.radius, this.startangle, this.endangle + this.startangle, this.ccw);
+		ctx.arc(0, 0, this.radius, this.startangle, this.endangle + this.startangle);
 		ctx.stroke();
 
-		ctx.lineWidth = 1;
+		ctx.lineWidth = this.bodystroke;
 		ctx.strokeStyle = this.bodycolor;
 
 		ctx.beginPath();
-		ctx.arc(0, 0, this.radius - this.timerwidth/2 + .5, this.startangle, this.endangle + this.startangle, this.ccw);
+		ctx.arc(0, 0, this.radius - (this.timerwidth - this.bodystroke)/2, this.startangle, this.endangle + this.startangle);
 		ctx.stroke();
 
 		ctx.beginPath();
