@@ -9,7 +9,7 @@ var songtime = document.getElementById("songtime");
 var cx = window.innerWidth / 2;
 var cy = window.innerHeight / 2;
 
-var currsong = 12;
+var currsong = 0;
 var songs = ['Slow Magic - Waited 4 U (ODESZA Remix).mp3'];
 
 songname.innerHTML = songs[currsong].substring(0,songs[currsong].lastIndexOf('.'));
