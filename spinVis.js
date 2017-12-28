@@ -11,11 +11,12 @@ var cy = window.innerHeight / 2;
 
 var currsong = 0;
 var songs = ['Slow Magic - Waited 4 U (ODESZA Remix).mp3'];
+var songdir = "";
 
 songname.innerHTML = songs[currsong].substring(0,songs[currsong].lastIndexOf('.'));
 
 var actx = new AudioContext();
-var audio = new Audio(songs[currsong]);
+var audio = new Audio(songdir + songs[currsong]);
 var audioSrc = actx.createMediaElementSource(audio);
 var analyser = actx.createAnalyser();
 audioSrc.connect(analyser);
@@ -24,7 +25,7 @@ var fData = new Uint8Array(analyser.frequencyBinCount);
 audio.play();
 
 var clockmax = 400;
-var clockmin = 350;
+var clockmin = 325;
 var bodywidth = 11;
 var timerwidth = 9;
 var clockbodycolor = "rgb(0,0,0)";
@@ -60,6 +61,7 @@ for(var i = 0; i < numpetals*3; i++){
 }
 
 ctx.translate(cx,cy);
+var clearsize = clock.radius + clock.bodywidth;
 
 requestAnimationFrame(function() { animateframe(); });
 
@@ -70,22 +72,23 @@ function animateframe(){
 
 			songname.innerHTML = songs[currsong].substring(0,songs[currsong].lastIndexOf('.'));
 
-			audio = new Audio(songs[currsong]);
+			audio = new Audio(songdir + songs[currsong]);
 			audioSrc = actx.createMediaElementSource(audio);
 			audioSrc.connect(analyser);
 			audioSrc.connect(actx.destination);
 			audio.play();
 		}
 	}
-
 	songtime.innerHTML = Math.floor(audio.currentTime / 60).toString() + ":" + 
 				  ("0" + Math.floor(audio.currentTime % 60).toString()).slice(-2);
 
 	analyser.getByteFrequencyData(fData);
 
-	ctx.clearRect(-cx, -cy, c.width, c.height);
+	ctx.clearRect(-clearsize, -clearsize, 2*clearsize, 2*clearsize);
 	drawclock(clock, audio, fData);
-	drawstar(levels, fData);
+	var starsize = drawstar(levels, fData);
+	var clocksize = clock.radius + 2*clock.bodywidth;
+	clearsize = clocksize > starsize ? clocksize : starsize;
 
 	requestAnimationFrame(function() { animateframe(); });
 }
@@ -95,10 +98,13 @@ function drawclock(clock, song, data){
 }
 
 function drawstar(star, data){
+	var maxlen = 0;
 	var l = star.length;
 	for(var i = 0; i < l; i++){ 
-		star[i].next(data); 
+		var temp = star[i].next(data);
+		maxlen = temp > maxlen ? temp : maxlen;
 	}
+	return maxlen;
 }
 
 function Clock(maxrad, minrad, bodywidth, bodycolor, timerwidth, timercolor, smoothness, freq){
@@ -175,6 +181,8 @@ function Level(fstart, size, numpetals, rotation, color) {
 		var sq = aveLevelScaled + fData[petal]*.3;
 		var length = size*sq*sq;
 
+		var maxlen = length;
+
 		ctx.fillStyle = this.color;
 		ctx.rotate(this.startangle);
 		ctx.beginPath();
@@ -189,12 +197,15 @@ function Level(fstart, size, numpetals, rotation, color) {
 				petal++;
 				var sq = aveLevelScaled + fData[petal]*.3;
 				length = size*sq*sq;
+				maxlen = length > maxlen ? length : maxlen;
 			}
 		}
 
 		ctx.closePath();
 		ctx.fill();
 		ctx.rotate(-1*this.startangle);
+
+		return maxlen;
 	}
 }
 
