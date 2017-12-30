@@ -54,6 +54,14 @@ p{
 	animation-duration: .4s;
 }
 
+.button{
+	float: left;
+	height: 60px;
+	width: 60px;
+	text-align: center;
+	cursor: pointer;
+}
+
 .openfile{
 	width: 0.1px;
 	height: 0.1px;
@@ -62,15 +70,26 @@ p{
 	position: absolute;
 }
 
-.openlabel{
-	font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
-	font-size: 50px;
+.playpause{
+	position: absolute;
+	left: calc(50vw - 30px);
+}
 
-	cursor: pointer;
+.nextsong{
+	position: absolute;
+	left: calc(50vw + 30px);
+}
 
-	color: rgb(0,0,0);
-	margin-left: 20px;
-	opacity: inherit;
+.prevsong{
+	position: absolute;
+	left: calc(50vw - 90px);
+}
+
+.symbol{
+	position: absolute;
+	top: 50%;
+	bottom: 50%;
+	transform: translate(-50%, -50%);
 }
 
 .hiding{
@@ -89,6 +108,15 @@ p{
 	padding: 0;
 
 	pointer-events: none;
+}
+
+.noselect {
+  -webkit-touch-callout: none; 
+    -webkit-user-select: none; 
+     -khtml-user-select: none; 
+       -moz-user-select: none;
+        -ms-user-select: none; 
+            user-select: none; 
 }
 
 @keyframes hide{
