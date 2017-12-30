@@ -80,7 +80,8 @@ function animateframe(){
 	songtime.innerHTML = Math.floor(audio.currentTime / 60).toString() + ":" + 
 				  ("0" + Math.floor(audio.currentTime % 60).toString()).slice(-2);
 
-	analyser.getByteFrequencyData(fData);
+	if(!audio.paused)
+		analyser.getByteFrequencyData(fData);
 
 	ctx.clearRect(-clearsize, -clearsize, 2*clearsize, 2*clearsize);
 	drawclock(clock, audio, fData);
@@ -129,8 +130,6 @@ function Clock(maxrad, minrad, bodywidth, bodycolor, timerwidth, timercolor, smo
 		this.radius = this.radius*this.smoothness + ((this.maxradius-this.minradius)*(1 - avelevel/255) + this.minradius)*(1 - this.smoothness);
 		if(song.duration > 0)
 			this.endangle = this.endangle*.95 + 2*Math.PI*song.currentTime/song.duration*.05;
-		else if(this.endangle > 0)
-			this.endangle = this.endangle*.95 + 2*Math.PI*.05;
 
 		ctx.lineWidth = this.timerwidth;
 		ctx.strokeStyle = this.timercolor;
@@ -237,22 +236,26 @@ function resize(){
 var file_in = document.getElementById("file_in");
 
 file_in.onchange = function(){
-	audio.pause();
 	var files = this.files;
-	songs = [];
-	for(var i = 0; i < files.length; i++){
-		songs.push(new Song(URL.createObjectURL(files[i]), 
-							files[i].name.substring(0,files[i].name.lastIndexOf("."))));
-	}
-	shuffle(songs);
-	currsong = 0;
+	if(files.length != 0){
+		var paused = audio.paused;
+		audio.pause();
+		songs = [];
+		for(var i = 0; i < files.length; i++){
+			songs.push(new Song(URL.createObjectURL(files[i]), 
+								files[i].name.substring(0,files[i].name.lastIndexOf("."))));
+		}
+		shuffle(songs);
+		currsong = 0;
 
-	songname.innerHTML = songs[currsong].name;
-	audio = new Audio(songs[currsong].file);
-	audioSrc = actx.createMediaElementSource(audio);
-	audioSrc.connect(analyser);
-	audioSrc.connect(actx.destination);
-	audio.play();
+		songname.innerHTML = songs[currsong].name;
+		audio = new Audio(songs[currsong].file);
+		audioSrc = actx.createMediaElementSource(audio);
+		audioSrc.connect(analyser);
+		audioSrc.connect(actx.destination);
+		if(!paused)
+			audio.play();
+	}
 }
 
 var menu = document.getElementById("menu");
@@ -268,4 +271,77 @@ menu.onmouseenter = function(){
 
 menu.onmouseleave = function(){
 	menu.className = menu.className.replace("showing", "hiding");
+}
+
+var playpause = document.getElementById("playpause");
+var play_symbol = document.getElementById("play_symbol");
+var pause_symbol = document.getElementById("pause_symbol");
+
+playpause.onmouseup = function(){
+	if(audio.paused){
+		audio.play();
+		play_symbol.style.visibility = "hidden";
+		pause_symbol.style.visibility = "visible";
+	}
+	else{
+		audio.pause();
+		pause_symbol.style.visibility = "hidden";
+		play_symbol.style.visibility = "visible";
+	}
+}
+
+var prevsong = document.getElementById("prevsong");
+var prevsymbol = document.getElementById("prevsymbol");
+
+prevsong.onmousedown = function(){
+	prevsymbol.style.opacity = .75;
+}
+
+prevsong.onmouseleave = function(){
+	prevsymbol.style.opacity = 1;
+}
+
+prevsong.onmouseup = function(){
+	prevsymbol.style.opacity = 1;
+	if(currsong > 0){
+		var paused = audio.paused;
+		audio.pause();
+		currsong--;
+		songname.innerHTML = songs[currsong].name;
+
+		audio = new Audio(songs[currsong].file);
+		audioSrc = actx.createMediaElementSource(audio);
+		audioSrc.connect(analyser);
+		audioSrc.connect(actx.destination);
+		if(!paused)
+			audio.play();
+	}
+}
+
+var nextsong = document.getElementById("nextsong");
+var nextsymbol = document.getElementById("nextsymbol");
+
+nextsong.onmousedown = function(){
+	nextsymbol.style.opacity = .75;
+}
+
+nextsong.onmouseleave = function(){
+	nextsymbol.style.opacity = 1;
+}
+
+nextsong.onmouseup = function(){
+	nextsymbol.style.opacity = 1;
+	if(currsong < songs.length - 1){
+		var paused = audio.paused;
+		audio.pause();
+		currsong++;
+		songname.innerHTML = songs[currsong].name;
+
+		audio = new Audio(songs[currsong].file);
+		audioSrc = actx.createMediaElementSource(audio);
+		audioSrc.connect(analyser);
+		audioSrc.connect(actx.destination);
+		if(!paused)
+			audio.play();
+	}
 }
