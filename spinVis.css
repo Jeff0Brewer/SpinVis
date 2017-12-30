@@ -2,7 +2,6 @@
 	font-family: comfortaa;
 	src: url("Comfortaa-Regular.ttf");
 }
-
 html, body{
 	overflow: hidden;
 	width: 100%;
@@ -78,6 +77,20 @@ p{
 .prevsong{
 	position: absolute;
 	left: calc(50vw - 90px);
+}
+
+.git{
+	position: absolute;
+	right: 0;
+}
+
+.gitsymbol{
+	display: inline-block;
+	height: 35px;
+	width: 35px;
+
+	background-image: url("gitlogo.svg");
+	background-size: cover;
 }
 
 .symbol{
