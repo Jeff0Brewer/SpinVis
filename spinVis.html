@@ -5,11 +5,42 @@
 </head>
   <body onresize="resize()">
     <canvas class="c" id="c"></canvas>
-    <p class="song" id="songname"></p>
-    <p class="time" id="songtime"></p>
+
+    <p class="song noselect" id="songname"></p>
+    <p class="time noselect" id="songtime"></p>
+    
     <div class="menu" id="menu">
     	<input id="file_in" class="openfile" type="file" accept="audio/*" multiple="multiple">
-    	<label class="openlabel" for="file_in">+</label>
+    	<label class="button" for="file_in">
+    		<svg width="25" height="25" class="symbol">
+    			<rect width="5" height="25" x="10" y="0"/>
+    			<rect width="25" height="5" x="0" y="10"/>
+    		</svg>
+    	</label>
+
+    	<div id="prevsong" class="prevsong button">
+    		<svg id="prevsymbol" width="17" height="15" class="symbol">
+    			<polygon points="17,0 17,15 2,7.5"/>
+    			<rect width="3" height="15" x="0" y="0"/>
+    		</svg>
+    	</div>
+
+    	<div id="playpause" class="playpause button">
+	    	<svg id="play_symbol" width="30" height="30" class="symbol" style="visibility: hidden;">
+	    		<polygon points="0,0 0,30 30,15"/>
+	    	</svg>
+	    	<svg id="pause_symbol" width="30" height="30" class="symbol">
+	    		<rect width="10" height="30" x="1" y="0"/>
+	    		<rect width="10" height="30" x="19" y="0"/>
+	    	</svg>
+    	</div>
+
+    	<div id="nextsong" class="nextsong button">
+    		<svg id="nextsymbol" width="17" height="15" class="symbol">
+    			<polygon points="0,0 0,15 15,7.5"/>
+    			<rect width="3" height="15" x="14" y="0"/>
+    		</svg>
+    	</div>
 	</div>
     <script type="text/javascript" src="spinVis.js"></script>
   </body>
