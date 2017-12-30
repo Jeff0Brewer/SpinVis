@@ -4,7 +4,13 @@
   <link rel="stylesheet" type="text/css" href="spinVis.css">
 </head>
   <body onresize="resize()">
-    <canvas class="c" id="c"></canvas>	
+    <canvas class="c" id="c"></canvas>
+    <p class="song" id="songname"></p>
+    <p class="time" id="songtime"></p>
+    <div class="menu" id="menu">
+    	<input id="file_in" class="openfile" type="file" accept="audio/*" multiple="multiple">
+    	<label class="openlabel" for="file_in">+</label>
+	</div>
     <script type="text/javascript" src="spinVis.js"></script>
   </body>
 </html>
