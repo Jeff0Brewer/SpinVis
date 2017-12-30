@@ -233,7 +233,8 @@ function resize(){
 	ctx.translate(cx,cy);
 }
 
-var clickopacity = .75;
+var clickopacity = .7;
+var hoveropacity = .85;
 var menu = document.getElementById("menu");
 
 menu.onmouseenter = function(){
@@ -244,7 +245,7 @@ menu.onmouseleave = function(){
 	menu.className = menu.className.replace("showing", "hiding");
 }
 
-setTimeout(function(){ menu.className += " hiding"; }, 5000);
+setTimeout(function(){ menu.className += " hiding"; }, 4000);
 
 var file_in = document.getElementById("file_in");
 var filebutton = document.getElementById("filebutton");
@@ -273,15 +274,24 @@ file_in.onchange = function(){
 	}
 }
 
+filebutton.onmouseenter = function(){ filebutton.style.opacity = hoveropacity; }
 filebutton.onmousedown = function(){ filebutton.style.opacity = clickopacity; }
 filebutton.onmouseleave = function(){ filebutton.style.opacity = 1; }
-filebutton.onmouseup = function(){ filebutton.style.opacity = 1; }
+filebutton.onmouseup = function(){ filebutton.style.opacity = hoveropacity; }
 
 var playpause = document.getElementById("playpause");
 var play_symbol = document.getElementById("play_symbol");
 var pause_symbol = document.getElementById("pause_symbol");
 
+playpause.onmouseenter = function(){ play_symbol.style.opacity = hoveropacity;
+									 pause_symbol.style.opacity = hoveropacity; }
+playpause.onmousedown = function(){ play_symbol.style.opacity = clickopacity;
+									pause_symbol.style.opacity = clickopacity; }	
+playpause.onmouseleave = function(){ play_symbol.style.opacity = 1;
+									 pause_symbol.style.opacity = 1; }							 								 
 playpause.onmouseup = function(){
+	play_symbol.style.opacity = hoveropacity;
+	pause_symbol.style.opacity = hoveropacity;
 	if(audio.paused){
 		audio.play();
 		play_symbol.style.visibility = "hidden";
@@ -297,10 +307,11 @@ playpause.onmouseup = function(){
 var prevsong = document.getElementById("prevsong");
 var prevsymbol = document.getElementById("prevsymbol");
 
+prevsong.onmouseenter = function(){ prevsymbol.style.opacity = hoveropacity; }
 prevsong.onmousedown = function(){ prevsymbol.style.opacity = clickopacity; }
 prevsong.onmouseleave = function(){ prevsymbol.style.opacity = 1; }
 prevsong.onmouseup = function(){
-	prevsymbol.style.opacity = 1;
+	prevsymbol.style.opacity = hoveropacity; 
 	if(currsong > 0){
 		var paused = audio.paused;
 		audio.pause();
@@ -319,10 +330,11 @@ prevsong.onmouseup = function(){
 var nextsong = document.getElementById("nextsong");
 var nextsymbol = document.getElementById("nextsymbol");
 
+nextsong.onmouseenter = function(){ nextsymbol.style.opacity = hoveropacity; }
 nextsong.onmousedown = function(){ nextsymbol.style.opacity = clickopacity; }
 nextsong.onmouseleave = function(){ nextsymbol.style.opacity = 1; }
 nextsong.onmouseup = function(){
-	nextsymbol.style.opacity = 1;
+	nextsymbol.style.opacity = hoveropacity;
 	if(currsong < songs.length - 1){
 		var paused = audio.paused;
 		audio.pause();
@@ -340,6 +352,7 @@ nextsong.onmouseup = function(){
 
 var gitbutton = document.getElementById("gitbutton");
 
+gitbutton.onmouseenter = function(){ gitbutton.style.opacity = hoveropacity; }
 gitbutton.onmousedown = function(){ gitbutton.style.opacity = clickopacity; }
 gitbutton.onmouseleave = function(){ gitbutton.style.opacity = 1; }
 gitbutton.onmouseup = function(){ gitbutton.style.opacity = 1; }
