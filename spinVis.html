@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<title>SpinVis</title>
   <link rel="stylesheet" type="text/css" href="spinVis.css">
 </head>
   <body onresize="resize()">
@@ -11,7 +12,7 @@
     
     <div class="menu" id="menu">
     	<input id="file_in" class="openfile" type="file" accept="audio/*" multiple="multiple">
-    	<label class="button" for="file_in">
+    	<label id="filebutton" class="button" for="file_in">
     		<svg width="25" height="25" class="symbol">
     			<rect width="5" height="25" x="10" y="0"/>
     			<rect width="25" height="5" x="0" y="10"/>
@@ -42,7 +43,7 @@
     		</svg>
     	</div>
 
-    	<a id="git" class="button git" href="https://github.com/Jeff0Brewer/SpinVis" target="_blank">
+    	<a id="gitbutton" class="button git" href="https://github.com/Jeff0Brewer/SpinVis" target="_blank">
     		<div class="gitsymbol symbol"></div>
     	</a>
 	</div>
