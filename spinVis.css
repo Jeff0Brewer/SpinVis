@@ -3,11 +3,6 @@
 	src: url("Comfortaa-Regular.ttf");
 }
 
-@font-face {
-	font-family: geosans;
-	src: url("GeosansLight.ttf");
-}
-
 html, body{
 	overflow: hidden;
 	width: 100%;
