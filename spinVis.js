@@ -3,20 +3,19 @@ c.width = window.innerWidth;
 c.height = window.innerHeight;
 var ctx = c.getContext("2d");
 
-var songname = document.getElementById("songname");
-var songtime = document.getElementById("songtime");
-
 var cx = window.innerWidth / 2;
 var cy = window.innerHeight / 2;
 
-var currsong = 0;
-var songs = ['Slow Magic - Waited 4 U (ODESZA Remix).mp3'];
-var songdir = "";
+var songname = document.getElementById("songname");
+var songtime = document.getElementById("songtime");
 
-songname.innerHTML = songs[currsong].substring(0,songs[currsong].lastIndexOf('.'));
+var currsong = 0;
+var songs = [new Song('Slow Magic - Waited 4 U (ODESZA Remix).mp3',
+					  'Slow Magic - Waited 4 U (ODESZA Remix)')];
+songname.innerHTML = songs[currsong].name;
 
 var actx = new AudioContext();
-var audio = new Audio(songdir + songs[currsong]);
+var audio = new Audio(songs[currsong].file);
 var audioSrc = actx.createMediaElementSource(audio);
 var analyser = actx.createAnalyser();
 audioSrc.connect(analyser);
@@ -69,10 +68,9 @@ function animateframe(){
 	if(audio.currentTime >= audio.duration){
 		if(currsong < songs.length - 1){
 			currsong++;
+			songname.innerHTML = songs[currsong].name;
 
-			songname.innerHTML = songs[currsong].substring(0,songs[currsong].lastIndexOf('.'));
-
-			audio = new Audio(songdir + songs[currsong]);
+			audio = new Audio(songs[currsong].file);
 			audioSrc = actx.createMediaElementSource(audio);
 			audioSrc.connect(analyser);
 			audioSrc.connect(actx.destination);
@@ -209,6 +207,21 @@ function Level(fstart, size, numpetals, rotation, color) {
 	}
 }
 
+function Song(file, name){
+	this.file = file;
+	this.name = name;
+}
+
+function shuffle(array){
+	var len = array.length;
+	for(var i = 0; i < len; i++){
+		var ind = Math.floor(Math.random()*(len - i)) + i;
+		var temp = array[i]
+		array[i] = array[ind];
+		array[ind] = temp;
+	}
+}
+
 function resize(){
 	ctx.translate(-cx,-cy);
 
@@ -219,4 +232,40 @@ function resize(){
 	c.height = window.innerHeight;
 
 	ctx.translate(cx,cy);
+}
+
+var file_in = document.getElementById("file_in");
+
+file_in.onchange = function(){
+	audio.pause();
+	var files = this.files;
+	songs = [];
+	for(var i = 0; i < files.length; i++){
+		songs.push(new Song(URL.createObjectURL(files[i]), 
+							files[i].name.substring(0,files[i].name.lastIndexOf("."))));
+	}
+	shuffle(songs);
+	currsong = 0;
+
+	songname.innerHTML = songs[currsong].name;
+	audio = new Audio(songs[currsong].file);
+	audioSrc = actx.createMediaElementSource(audio);
+	audioSrc.connect(analyser);
+	audioSrc.connect(actx.destination);
+	audio.play();
+}
+
+var menu = document.getElementById("menu");
+
+setTimeout(function(){
+	if(!menu.className.includes("showing"))
+		menu.className += " hiding";
+}, 5000);
+
+menu.onmouseenter = function(){
+	menu.className = menu.className.replace("hiding", "showing");
+}
+
+menu.onmouseleave = function(){
+	menu.className = menu.className.replace("showing", "hiding");
 }
