@@ -10,8 +10,8 @@ var songname = document.getElementById("songname");
 var songtime = document.getElementById("songtime");
 
 var currsong = 0;
-var songs = [new Song('Slow Magic - Waited 4 U (ODESZA Remix).mp3',
-					  'Slow Magic - Waited 4 U (ODESZA Remix)')];
+var songs = [new Song('songe.mp3',
+					  'ODESZA - Divide (feat. Kelsey Bulkin)')];
 songname.innerHTML = songs[currsong].name;
 
 var actx = new AudioContext();
