@@ -25,8 +25,8 @@ audioSrc.connect(analyser);
 audioSrc.connect(actx.destination);
 var fData = new Uint8Array(analyser.frequencyBinCount);
 
-var clockmax = 400;
-var clockmin = 325;
+var clockmax = 360;
+var clockmin = 290;
 var bodywidth = 11;
 var timerwidth = 9;
 var clockbodycolor = "rgb(0,0,0)";
@@ -38,7 +38,7 @@ var clock = new Clock(clockmax, clockmin, bodywidth, clockbodycolor, timerwidth,
 var stR = 0, stG = 0, stB = 0;
 var endR = 255, endG = 255, endB = 255;
 var numtop = 3;
-var size = .01;
+var size = .009;
 var numpetals = 17;
 var rotation = 1;
 var levels = new Array(Math.floor((.3*fData.length)/numpetals));
@@ -64,16 +64,13 @@ for(var i = 0; i < numpetals*3; i++){
 ctx.translate(cx,cy);
 var clearsize = clock.radius + clock.bodywidth;
 
-requestAnimationFrame(function() { animateframe(); });
-
 function animateframe(){
 	if(audio.currentTime >= audio.duration)
 		nextsong(false);
 	songtime.innerHTML = Math.floor(audio.currentTime / 60).toString() + ":" + 
 				  ("0" + Math.floor(audio.currentTime % 60).toString()).slice(-2);
 
-	if(!audio.paused)
-		analyser.getByteFrequencyData(fData);
+	analyser.getByteFrequencyData(fData);
 
 	ctx.clearRect(-clearsize, -clearsize, 2*clearsize, 2*clearsize);
 	drawclock(clock, audio, fData);
@@ -81,7 +78,8 @@ function animateframe(){
 	var clocksize = clock.radius + 2*clock.bodywidth;
 	clearsize = clocksize > starsize ? clocksize : starsize;
 
-	requestAnimationFrame(function() { animateframe(); });
+	if(!audio.paused)
+		requestAnimationFrame(function() { animateframe(); });
 }
 
 function drawclock(clock, song, data){
@@ -312,6 +310,7 @@ playpause.onmouseup = function(){
 		audio.play();
 		play_symbol.style.visibility = "hidden";
 		pause_symbol.style.visibility = "visible";
+		requestAnimationFrame(function() { animateframe(); });
 	}
 	else{
 		audio.pause();
@@ -371,6 +370,14 @@ function checkbuttons(){
 	else{
 		skipsong.style.pointerEvents = "auto";
 		skipsong.style.opacity = 1;
+	}
+	if(audio.paused){
+		pause_symbol.style.visibility = "hidden";
+		play_symbol.style.visibility = "visible";
+	}
+	else{
+		play_symbol.style.visibility = "hidden";
+		pause_symbol.style.visibility = "visible";
 	}
 
 }
